@@ -1,10 +1,12 @@
 #include "gameinterface.h"
+#include "army.h"
 
 GameInterface::GameInterface(QWidget *w)
 {
     //mainWidget = w;
     mainGameMap = new QGraphicsScene();
     QLayout * layout = new QVBoxLayout();
+    Army *army1 = new Army(10,9,1,false); //
 
     nextTurnBtn = new QPushButton("Next Turn");
 
@@ -13,6 +15,10 @@ GameInterface::GameInterface(QWidget *w)
     mainGameMap->addRect(0,0,sceneX,sceneY);
     mainGameMap->setSceneRect(0,0,sceneX,sceneY);
     getGameBackGround(mainGameMap);
+
+    //army1->getArmyFigure()->setPos(20,20);
+    mainGameMap->addItem(army1->getArmyGUI());
+    //mainGameMap->addItem(army1->getArmyhex());
 
     view = new QGraphicsView(mainGameMap);
     view->setWindowTitle("Graphic View");

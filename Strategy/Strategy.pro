@@ -15,11 +15,14 @@ TEMPLATE = app
 SOURCES += main.cpp\
         widget.cpp \
     GameBackGround.cpp \
-    gameinterface.cpp
+    gameinterface.cpp \
+    army.cpp \
+    gameutil.cpp
 
 HEADERS  += widget.h \
     GameBackGround.h \
     GameUtil.h \
-    gameinterface.h
+    gameinterface.h \
+    army.h
 
 FORMS    += widget.ui
