@@ -17,7 +17,7 @@ GameInterface::GameInterface(QWidget *w)
     getGameBackGround(mainGameMap);
 
     //army1->getArmyFigure()->setPos(20,20);
-    mainGameMap->addItem(army1->getArmyGUI());
+    mainGameMap->addItem(army1);
     //mainGameMap->addItem(army1->getArmyhex());
 
     view = new QGraphicsView(mainGameMap);

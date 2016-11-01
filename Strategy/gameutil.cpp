@@ -4,13 +4,31 @@ intCoor GameUtil::getRelativeHexCoor(int x,int y){
 
 }
 
-intCoor GameUtil::getDesMapHexCoor(int mapx,int mapy, int x,int y){
-    //Get the destination HexCoor. (x,y) is the relative HexCoor
+intCoor GameUtil::getDesMapHexCoor(int mapx,int mapy, int dx,int dy){
+    //Get the destination HexCoor. (dx,dy) is the destination in relative HexCoor
+    //(mapx,mapy) is the map(absolu) hexCoor
+    qDebug() << "GameUtil::getDesMapHexCoor"<<mapx <<","<<mapy<<"|"
+             << dx<<","<<dy;
+    if(mapx % 2 == 0)
+        return std::make_pair(mapx + dx, mapy + dy);
+    else if(dx % 2 == 0)
+        return std::make_pair(mapx + dx, mapy + dy);
+    else
+        return std::make_pair(mapx + dx, mapy + dy + 1);
+}
+
+bool GameUtil::inMap(int mapx,int mapy){
+    if(mapx < 0 || mapy < 0)
+        return false;
+    else if(mapx >= GAMEBG_GRID_COLONM || mapy >= GAMEBG_GRID_ROW - mapx % 2)
+        return false;
+    else
+        return true;
 }
 
 dCoor GameUtil::getPrecisePostion(int mapx,int mapy){
     //Get the precise hexgon's center position in the scene from HexCoor
-    double X = mapx * 1.5 * HEXGON_SIDE_LENGTH + 0.5 * HEXGON_SIDE_LENGTH;
+    double X = mapx * 1.5 * HEXGON_SIDE_LENGTH;
     double Y = (mapy + (double)(mapx % 2) / 2) * ROOT_3 * HEXGON_SIDE_LENGTH;
     return std::make_pair(X+ GameUtil::hexCenter.first,
                           Y+ GameUtil::hexCenter.second);
@@ -54,4 +72,15 @@ bool GameUtil::accessible(int rang, int hexCoorX, int hexCoorY){
         return true;
     else
         return false;
+}
+
+QColor GameUtil::getQColorbyID(int id){
+    switch (id){
+    case 0:
+        return Qt::black;
+        break;
+    case 1:
+        return Qt::red;
+        break;
+    }
 }

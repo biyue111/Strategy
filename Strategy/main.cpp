@@ -11,13 +11,13 @@
 #include "GameBackGround.cpp"
 #include "GameUtil.h"
 #include "gameinterface.h"
+#include "gamecontroler.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     QWidget w;
-    GameInterface *gameInterface;
-    gameInterface= new GameInterface(&w);
+    GameControler *gameControler= new GameControler(&w);
     w.show();
     //w->show();
     //Widget w;

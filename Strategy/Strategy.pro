@@ -17,12 +17,16 @@ SOURCES += main.cpp\
     GameBackGround.cpp \
     gameinterface.cpp \
     army.cpp \
-    gameutil.cpp
+    gameutil.cpp \
+    gamemapregion.cpp \
+    gamecontroler.cpp
 
 HEADERS  += widget.h \
     GameBackGround.h \
     GameUtil.h \
     gameinterface.h \
-    army.h
+    army.h \
+    gamemapregion.h \
+    gamecontroler.h
 
 FORMS    += widget.ui

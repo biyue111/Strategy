@@ -2,11 +2,13 @@
 #define ARMY_H
 #include <QGraphicsRectItem>
 #include <QGraphicsPolygonItem>
+#include <QGraphicsTextItem>
 #include <QObject>
 #include <QPainter>
 #include <QList>
 #include <typeinfo>
 #include "GameUtil.h"
+#include "armyregion.h"
 
 class ArmyCurrentRegion : public QObject, public QGraphicsItem
 {
@@ -28,7 +30,8 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                QWidget *widget)
     {
-        painter->setBrush(Qt::yellow);
+        QBrush b = QBrush(Qt::yellow,Qt::Dense4Pattern);
+        painter->setBrush(b);
         painter->drawPolygon(QPolygonF( QVector<QPointF>() <<
                                         QPointF( 0, 0 ) <<
                                         QPointF( HEXGON_SIDE_LENGTH, 0 ) <<
@@ -43,6 +46,9 @@ public:
 
 class ArmyAccessibleRegion : public QObject,public QGraphicsItem
 {
+    Q_OBJECT
+signals:
+    void movingSignal(QGraphicsItem *i_army, int i_hexCoorX, int i_hexCoorY);
 private:
     int hexCoorX,hexCoorY;
 protected:
@@ -61,7 +67,9 @@ public:
     }
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                QWidget *widget){
-        painter->setBrush(Qt::blue);
+        QBrush b = QBrush(Qt::yellow,Qt::Dense4Pattern);
+        painter->setBrush(b);
+        //painter->setBrush(Qt::blue);
         painter->drawPolygon(QPolygonF( QVector<QPointF>() <<
                                         QPointF( 0, 0 ) <<
                                         QPointF( HEXGON_SIDE_LENGTH, 0 ) <<
@@ -83,7 +91,7 @@ public:
         this->setPos(-GameUtil::hexCenter.first,-GameUtil::hexCenter.second);
     }
     QRectF boundingRect() const{
-        qreal penWidth = 1;
+        //qreal penWidth = 1;
         std::pair<double,double> size = GameUtil::getRectSize(5, 5);
         dCoor orgine = GameUtil::hexgonOriginPostion(2, 2);
         return QRectF(-orgine.first - 0.5 * HEXGON_SIDE_LENGTH, -orgine.second,
@@ -92,33 +100,47 @@ public:
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                QWidget *widget){
-        std::pair<double,double> size = GameUtil::getRectSize(5, 5);
-        dCoor orgine = GameUtil::hexgonOriginPostion(2, 2);
-        painter->drawRect(-orgine.first - 0.5 * HEXGON_SIDE_LENGTH, -orgine.second,
-                          size.first, size.second);
+        //std::pair<double,double> size = GameUtil::getRectSize(5, 5);
+        //dCoor orgine = GameUtil::hexgonOriginPostion(2, 2);
+        //painter->drawRect(-orgine.first - 0.5 * HEXGON_SIDE_LENGTH, -orgine.second,
+        //                  size.first, size.second);
     }
 };
 
-class Army
+class Army : public QObject, public QGraphicsItem
 {
 private:
+    int ownerID;
     int mobility;
     int armyNumber;
     int mapHexCoorX,mapHexCoorY;//Postion in the map
     bool haveGeneral;
-    QGraphicsRectItem *armyContainer;
+    //QGraphicsRectItem *armyContainer;
     QGraphicsRectItem *armyFigure;
     ArmyCurrentRegion *armyCurrentRegion;
     ArmyAccessibleRegionContainer *armyAccRegionCtn;
     QList<ArmyAccessibleRegion *> armyAccessibleRegionList;
-    void moveTo();
+    QGraphicsTextItem *armyNumberText;
+    //void moveTo();
 public:
     //QGraphicsRectItem *armyTest;
 
-    Army(int i_posX, int i_posY, int i_armyNumber, bool i_haveGeneral);
-    QGraphicsRectItem *getArmyGUI() {return armyContainer;}
+    Army(int i_posX, int i_posY, int i_armyNumber, int i_ownerID, bool i_haveGeneral = false,
+         QGraphicsItem *parent = Q_NULLPTR);
+    //QGraphicsRectItem *getArmyGUI() {return armyContainer;}
     ArmyCurrentRegion *getArmyhex() {return armyCurrentRegion;}
-    int tryMoveTo(int posX,int posY);
+    //int tryMoveTo(int posX,int posY);
+
+    QRectF boundingRect() const{
+        return QRectF(-5,-5,10,10);
+    }
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+               QWidget *widget){    }
+    QList<ArmyAccessibleRegion *> getArmyAccRgList() {return armyAccessibleRegionList;}
+    int getOwnerID() {return ownerID;}
+    int getHexCoorX(){return mapHexCoorX;}
+    int getHexCoorY(){return mapHexCoorY;}
+    int changeHexCoor(int x, int y){mapHexCoorX = x;mapHexCoorY = y;}
 };
 
 #endif // ARMY_H
