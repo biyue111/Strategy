@@ -1,5 +1,11 @@
 #include "GameUtil.h"
 
+const int GameUtil::nearbyHexCoor[18][2]= {
+       //in Relative hexCoor
+       {0,-1},{1,-1},{1,0},{0,1},{-1,0},{-1,-1},
+       {0,-2},{1,-2},{2,-1},{2,0},{2,1},{1,1},{0,2},{-1,1},{-2,1},{-2,0},{-2,-1},{-1,-2}
+};
+
 intCoor GameUtil::getRelativeHexCoor(int x,int y){
 
 }
@@ -82,5 +88,23 @@ QColor GameUtil::getQColorbyID(int id){
     case 1:
         return Qt::red;
         break;
+    case 2:
+        return Qt::cyan;
+        break;
     }
+}
+
+QColor GameUtil::getQColorbyLandForm(GameUtil::landform l){
+    switch (l){
+	case GameUtil::land:
+        return Qt::darkGreen;
+        break;
+	case GameUtil::ocean:
+        return Qt::blue;
+        break;
+	case GameUtil::city:
+        return Qt::darkGray;
+        break;
+    }
+	
 }

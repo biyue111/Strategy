@@ -56,6 +56,7 @@ public:
     int getOwnerID() {return ownerID;}
     int getHexCoorX(){return mapHexCoorX;}
     int getHexCoorY(){return mapHexCoorY;}
+	GameUtil::landform getLandForm(){return landform;}
 };
 
 #endif // GAMEMAPREGION_H

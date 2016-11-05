@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     army.cpp \
     gameutil.cpp \
     gamemapregion.cpp \
-    gamecontroler.cpp
+    gamecontroler.cpp \
+    player.cpp
 
 HEADERS  += widget.h \
     GameBackGround.h \
@@ -27,6 +28,7 @@ HEADERS  += widget.h \
     gameinterface.h \
     army.h \
     gamemapregion.h \
-    gamecontroler.h
+    gamecontroler.h \
+    player.h
 
 FORMS    += widget.ui

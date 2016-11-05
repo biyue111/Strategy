@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
     QWidget w;
     GameControler *gameControler= new GameControler(&w);
     w.show();
+    gameControler->gameBegin();
     //w->show();
     //Widget w;
     //w.setLayout(layout);

@@ -11,6 +11,12 @@
 #define GAMEBG_GRID_COLONM 15
 #define GAMEBG_GRID_ROW 10
 #define SCENE_EGDE 10
+#define MAX_ARMY_NUM 64
+
+//layering
+
+#define ARMY_LAYER_UP 3
+#define ARMY_LAYER_DOWN 2
 
 typedef std::pair<int,int> intCoor;
 typedef std::pair<double,double> dCoor;
@@ -21,7 +27,8 @@ class GameUtil
 public:
     GameUtil(){}
     enum landform {land, ocean, city};
-
+    static const int a = 0;
+    const static int nearbyHexCoor[18][2];
     static intCoor getRelativeHexCoor(int x,int y);
     static intCoor getDesMapHexCoor(int mapx, int mapy, int dx, int dy);
     static dCoor getPrecisePostion(int mapx,int mapy);
@@ -33,6 +40,9 @@ public:
                                              0.5 * ROOT_3 * HEXGON_SIDE_LENGTH);
     static QColor getQColorbyID(int id);
     static bool inMap(int mapx, int mapy);
+    static QColor getQColorbyLandForm(landform l);
+    static int test(){return nearbyHexCoor[0][0];}
+
 };
 
 #endif // GAMEUTIL_H

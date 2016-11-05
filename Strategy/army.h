@@ -12,6 +12,9 @@
 
 class ArmyCurrentRegion : public QObject, public QGraphicsItem
 {
+	Q_OBJECT
+signals:
+    void armyClicked(QGraphicsItem * i_army, bool armyInteracStats);
 private:
     bool tryingToMove;
 protected:
@@ -124,6 +127,7 @@ private:
     //void moveTo();
 public:
     //QGraphicsRectItem *armyTest;
+    bool moved;//whether the army be moved this turn
 
     Army(int i_posX, int i_posY, int i_armyNumber, int i_ownerID, bool i_haveGeneral = false,
          QGraphicsItem *parent = Q_NULLPTR);
@@ -136,11 +140,17 @@ public:
     }
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                QWidget *widget){    }
+	void enableInteraction(); 
+	void disableInteraction();
     QList<ArmyAccessibleRegion *> getArmyAccRgList() {return armyAccessibleRegionList;}
     int getOwnerID() {return ownerID;}
     int getHexCoorX(){return mapHexCoorX;}
     int getHexCoorY(){return mapHexCoorY;}
+	ArmyCurrentRegion * getArmyCurrRg(){return armyCurrentRegion;}
+    QList<ArmyAccessibleRegion *> getarmyAccRgList(){return armyAccessibleRegionList;}
     int changeHexCoor(int x, int y){mapHexCoorX = x;mapHexCoorY = y;}
+	int getArmyNumber(){return armyNumber;}
+    void changeArmyNumber(int n);
 };
 
 #endif // ARMY_H
