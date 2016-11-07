@@ -38,7 +38,7 @@ Army::Army(int i_hexCoorX, int i_hexCoorY, int i_armyNumber, int i_ownerID, bool
     dCoor a = GameUtil::getPrecisePostion(i_hexCoorX,i_hexCoorY);
     this->setPos(a.first, a.second);
 
-    armyFigure = new QGraphicsRectItem(-5,-5,10,10,this);
+    armyFigure = new QGraphicsRectItem(-8,-8,16,16,this);
     armyFigure->setBrush(GameUtil::getQColorbyID(ownerID));
     //armyFigure->setPos(-GameUtil::hexCenter.first,-GameUtil::hexCenter.second);
     armyFigure->setZValue(2);//let the figure above region
@@ -58,6 +58,10 @@ Army::Army(int i_hexCoorX, int i_hexCoorY, int i_armyNumber, int i_ownerID, bool
     	armyAccessibleRegionList.append(aAR);
 	}		
     armyNumberText = new QGraphicsTextItem(QString::number(armyNumber),this);
+    QFont qfont = QFont();
+    qfont.setBold(true);
+    //armyNumberText->setFont(qfont);
+    armyNumberText->setPos(-8,-10);
     armyNumberText->setZValue(3);
     //armyTest = new QGraphicsRectItem(0,0,20,20,armyFigure);
     this->setZValue(ARMY_LAYER_UP);

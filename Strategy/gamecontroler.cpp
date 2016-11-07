@@ -176,21 +176,52 @@ void GameControler::armyClicked(QGraphicsItem *i_army, bool state){
     if(typeid(*i_army) == typeid(Army))
         army = (Army *)i_army;
     qDebug()<<"one army clicked";
-
+	bool inerObstruct[6];//iner (0--5) region has army or city
+	GameMapRegion *armyRegion = gameMapRegion[army->getHexCoorX()][army->getHexCoorY()];
     //Test the accessible region
     QList<ArmyAccessibleRegion *> accRgList = army->getArmyAccRgList();
     for(int i=0;i<18;i++){
         intCoor hexCoor = GameUtil::getDesMapHexCoor(army->getHexCoorX(), army->getHexCoorY(),
                                                      GameUtil::nearbyHexCoor[i][0], GameUtil::nearbyHexCoor[i][1]);
+		//Show accecable regions
         if(!GameUtil::inMap(hexCoor.first, hexCoor.second))
             accRgList.at(i)->setVisible(false);
-        else if(gameMapRegion[hexCoor.first][hexCoor.second]->getLandForm() == GameUtil::ocean &&
-                i >= 6)
-            accRgList.at(i)->setVisible(false);
-        else
-            accRgList.at(i)->setVisible(true);
-    }
+		else{
+			GameMapRegion *desRegion = gameMapRegion[hexCoor.first][hexCoor.second];
+			//Analyse landform
+			bool sameLandForm;
+			if(armyRegion->getLandForm() == desRegion->getLandForm())
+				sameLandForm = true;
+			else if(armyRegion->getLandForm() != GameUtil::ocean &&
+					desRegion->getLandForm() != GameUtil::ocean)
+				sameLandForm = true;
+			else 
+				sameLandForm = false;
 
+			if(i < 6){// iner circle rang = 1
+				accRgList.at(i)->setVisible(true);
+                if(!sameLandForm || desRegion->getArmy() != Q_NULLPTR ||
+						desRegion->getLandForm() == GameUtil::city)
+					inerObstruct[i] = true;
+				else 
+					inerObstruct[i] = false;
+			} else{// i >= 6
+				//iner Obstruct ?
+                bool obstructecd;
+				if( i % 2 == 0){
+					obstructecd = inerObstruct[(i - 6) / 2];
+				} else{
+                    obstructecd = inerObstruct[(i - 6) / 2] && inerObstruct[((i - 6) / 2 + 1) % 6];
+				}
+
+                if(!sameLandForm || obstructecd)
+					accRgList.at(i)->setVisible(false);
+				else
+					accRgList.at(i)->setVisible(true);
+			}
+		}
+    }
+	//(in)activate other army
     QVector<Army *> *armyList = this->actPlayer->getArmyList();
     for(int i=0;i<armyList->size();i++){
 		if(state){  //one army be activated
@@ -232,15 +263,46 @@ void GameControler::moveArmy(Army *army, GameMapRegion *r){
 }
 
 void GameControler::armyFight(Army *attacker, GameMapRegion *r){
+	//1 for attacker, 2 for defender
 	bool win_flag = false;
-	//
+	bool lost_flag = false;
+	int r1,r2;//army remain	
+	double bonus1,bonus2;
+	std::default_random_engine generator;
+    std::normal_distribution<double> distribution(1.0,1.0);
 	//attacking Code
-    qDebug() << "begin fighting";
-	win_flag = true;
+	int n1 = attacker->getArmyNumber();
+	int n2 = r->getArmy()->getArmyNumber();
+    bonus1 = distribution(generator);
+    bonus2 = distribution(generator);
+    if(bonus1 <= 0.33) bonus1 = 0.33;
+    if(bonus2 <= 0.33) bonus2 = 0.33;
+	r1 = (int)(n1 - n2 * bonus2);
+	r2 = (int)(n2 - n1 * bonus1);
+	if(r1 <= 0 && r2 <= 0){
+		//benefit defender
+		r1 = 0;
+		r2 = 1;
+		lost_flag = true;
+	} else if(r1 <= 0){
+		r1 = 0;
+		lost_flag = true;
+	} else if(r2 <= 0){
+		r2 = 0;
+		win_flag = true;
+	}
+
+    qDebug() << "finish fighting";
+	
+	attacker->changeArmyNumber(r1);
+	r->getArmy()->changeArmyNumber(r2);	
+	//win_flag = true;
 	if(win_flag){
 		removeArmy(r->getArmy());
         //r->changeArmy(Q_NULLPTR);
 		moveArmy(attacker, r);
+	} else if(lost_flag){
+		removeArmy(attacker);
 	}	
 }
 

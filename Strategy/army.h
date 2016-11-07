@@ -7,6 +7,7 @@
 #include <QPainter>
 #include <QList>
 #include <typeinfo>
+#include <QFont>
 #include "GameUtil.h"
 #include "armyregion.h"
 
