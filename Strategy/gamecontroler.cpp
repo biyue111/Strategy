@@ -5,9 +5,12 @@ GameControler::GameControler(QWidget *w){
     mainGameMap = new QGraphicsScene();
     QLayout * layout = new QVBoxLayout();
 
-    nextTurnBtn = new QPushButton("Next Turn");
+    nextTurnBtn = new QPushButton("&Next Turn");
     connect(nextTurnBtn,SIGNAL(clicked()),
 			this, SLOT(nextTurnBtnPushed()));	
+	restartBtn = new QPushButton("Restart");
+    connect(restartBtn,SIGNAL(clicked()),
+			this, SLOT(restartGame()));	
     double sceneX = (0.5 + 1.5 * GAMEBG_GRID_COLONM) * HEXGON_SIDE_LENGTH;
     double sceneY = GAMEBG_GRID_ROW * ROOT_3 * HEXGON_SIDE_LENGTH;
     mainGameMap->addRect(-0.5 * HEXGON_SIDE_LENGTH,0,sceneX,sceneY);
@@ -23,7 +26,7 @@ GameControler::GameControler(QWidget *w){
     view->resize(sceneX + SCENE_EGDE,sceneY + SCENE_EGDE);
     //view.show();
 
-
+	layout->addWidget(restartBtn);
     layout->addWidget(nextTurnBtn);
     layout->addWidget(view);
 
@@ -95,51 +98,156 @@ void GameControler::createGameMap(QGraphicsScene *scene){
 }
 
 void GameControler::gameBegin(){
-    //create Players
-    this->createPlayer(1,0);
-    this->createPlayer(2,0);
-    this->createArmy(1,1,1);
-    this->createArmy(2,1,1);
-    this->createArmy(1,2,2);
+    //create Human Players
+	//for(int i=0;i<HUMAN_NUMBER;i++){
+	//	this->createPlayer(false, i + 1);
+	//}
+    gameEnd = false;
+    this->createPlayer(false, 1);
+    this->createPlayer(false, 2);
+	cityVList[0]->changeOwner(playerIDVList[0]);
+    createArmy(cityVList[0]->getHexCoorX(), cityVList[0]->getHexCoorY(),
+                    playerIDVList[0], 8);
+	if(HUMAN_NUMBER == 2){
+    cityVList[cityVList.size() - 1]->changeOwner(playerIDVList[1]);
+    //createArmy(cityVList[cityVList.size() - 1]->getHexCoorX(),
+    //            cityVList[cityVList.size() - 1]->getHexCoorY(),
+	//			playerIDVList[1], 8);
+	}
+    //this->createArmy(1,1,1);
+    //this->createArmy(2,1,1);
+    ///this->createArmy(1,2,2);
 	this->activatePlayer(idPlayerMap[playerIDVList[0]]);
 	actPlayerSequenceNumber = 0;
+	nextTurnBtn->setEnabled(true);
+	//endTurn();
 }
 void GameControler::onePlayerFinish(){
 	inactivatePlayer();
 	//find next player
-	actPlayerSequenceNumber++;
-	if(actPlayerSequenceNumber >= playerIDVList.size()){
-		this->endTurn();
-		actPlayerSequenceNumber = 0;
-	}
-	Player *nextPlayer = idPlayerMap[playerIDVList[actPlayerSequenceNumber]];
-	activatePlayer(nextPlayer);
+    if(!gameEnd){
+        actPlayerSequenceNumber++;
+        if(actPlayerSequenceNumber >= playerIDVList.size()){
+            this->endTurn();
+            actPlayerSequenceNumber = 0;
+        }
+        Player *nextPlayer = idPlayerMap[playerIDVList[actPlayerSequenceNumber]];
+        //Add Army for Next Player
+        for(int i=0;i<cityVList.size();i++){
+            if(cityVList[i]->getOwnerID() == nextPlayer->getPlayerID()){
+                if(cityVList[i]->getArmy()){
+                    Army *army = cityVList[i]->getArmy();
+                    if(army->getArmyNumber() + 8 < MAX_ARMY_NUM){
+                        army->changeArmyNumber(army->getArmyNumber() + 8);
+                    } else{
+                        army->changeArmyNumber(MAX_ARMY_NUM);
+                    }
+                } else{//not have army
+                    createArmy(cityVList[i]->getHexCoorX(), cityVList[i]->getHexCoorY(),
+                                cityVList[i]->getOwnerID(), 8, false);
+                }
+            }
+        }
+        activatePlayer(nextPlayer);
+    }
 }
 void GameControler::endTurn(){
 	//add army in every city
 	//int armdyI = 8;
-    for(int i=0;i<cityVList.size();i++){
-        if(cityVList[i]->getOwnerID()!=0){
-            if(cityVList[i]->getArmy()){
-                Army *army = cityVList[i]->getArmy();
-				if(army->getArmyNumber() + 8 < MAX_ARMY_NUM){
-					army->changeArmyNumber(army->getArmyNumber() + 8);		
-				} else{
-					army->changeArmyNumber(MAX_ARMY_NUM);
+}
+bool GameControler::playerFail(Player *player){
+	if(player)
+	return !player->getArmyList()->size() && 
+			!player->getCityVList()->size();
+	else
+		return false;
+}
+
+int GameControler::tryEndGame(){
+	if(idPlayerMap.size() == 1){
+        QMessageBox msgBox;
+        msgBox.setText("The document has been modified.");
+        msgBox.exec();
+        gameEnd = true;
+		nextTurnBtn->setEnabled(false);
+        return 1;
+	} else
+		return 0;
+}
+
+void GameControler::restartGame(){
+	while(armyVList.size()){
+		removeArmy(armyVList[0]);
+	}
+	while(idPlayerMap.size()){
+        Player *player = idPlayerMap[playerIDVList[0]];
+		removePlayer(player);
+	}
+//	mainGameMap->update();
+	armyVList.clear();
+	idPlayerMap.clear();
+	playerIDVList.clear();
+	actPlayer = Q_NULLPTR;
+    for(int j=0;j<GAMEBG_GRID_COLONM;j++){
+        for(int i=0;i<(GAMEBG_GRID_ROW - j % 2);i++){
+			GameMapRegion *r = gameMapRegion[j][i];
+			r->changeArmy(Q_NULLPTR);
+			r->changeOwner(0);
+		}
+    }
+	mainGameMap->update();
+	this->gameBegin();
+}
+
+int GameControler::createPlayer(bool i_isNPC, int id){
+	if(id < 0){
+		id = 1;
+		bool findID = false;
+		while(!findID){
+            findID = true;
+			for(int i=0;i<playerIDVList.size();i++){
+				if(id == playerIDVList[i]){
+					findID = false;
+					id++;
+					break;
 				}
-			} else{//not have army
-                createArmy(cityVList[i]->getHexCoorX(), cityVList[i]->getHexCoorY(),
-                            cityVList[i]->getOwnerID(), 8, false);
 			}
 		}
 	}
-}
-
-void GameControler::createPlayer(int id, bool i_isNPC){
+	for(int i=0;i<playerIDVList.size();i++)
+		if(id == playerIDVList[i])
+			qDebug() << "repeat player id";
     Player *player = new Player(id, i_isNPC);
 	playerIDVList.append(id);
     idPlayerMap.insert(id, player);
     player->disableInteraction();
+	qDebug() << "create Player with id" << id;
+}
+
+void GameControler::removePlayer(Player *player){
+	if(player == Q_NULLPTR){
+		qDebug() << "GameCOntroler: player NULL";
+		return;
+	}
+	if(actPlayer == Q_NULLPTR){
+		qDebug() << "GameCOntroler: actPlayer NULL";
+	}else if(actPlayer->getPlayerID() == player->getPlayerID()){
+        actPlayer = Q_NULLPTR;
+    }
+	for(int i=0;i < player->getCityVList()->size();i++){
+        player->getCityVList()->at(i)->changeOwner(0);
+	}
+	while(player->getArmyList()->size()){
+		removeArmy(player->getArmyList()->at(0));
+	}
+	idPlayerMap.remove(player->getPlayerID());
+    for(int i=0;i < playerIDVList.size();i++){
+        if(player->getPlayerID() == playerIDVList[i]){
+			playerIDVList.remove(i);
+			break;
+		}
+	}
+	delete player;
 }
 
 void GameControler::createArmy(int hexCoorX, int hexCoorY, int ownerID, int number, bool hasgeneral){
@@ -157,7 +265,7 @@ void GameControler::createArmy(int hexCoorX, int hexCoorY, int ownerID, int numb
                 this, SLOT(armyClicked(QGraphicsItem*, bool)));
     //Add to Map
     gameMapRegion[hexCoorX][hexCoorY]->changeArmy(army1);
-    //Add to owner's list UNFINISHED
+    //Add to owner's list
     idPlayerMap[ownerID]->addArmy(army1);
     army1->disableInteraction();
     mainGameMap->addItem(army1);
@@ -167,6 +275,7 @@ void GameControler::removeArmy(Army *army){
     gameMapRegion[army->getHexCoorX()][army->getHexCoorY()]->changeArmy(Q_NULLPTR);
 	mainGameMap->removeItem(army);
     idPlayerMap[army->getOwnerID()]->getArmyList()->removeAll(army);
+    armyVList.removeAll(army);
 	//
 	delete army;
 }	
@@ -243,7 +352,22 @@ void GameControler::moveArmy(Army *army, GameMapRegion *r){
     army->changeHexCoor(r->getHexCoorX(),r->getHexCoorY());
     r->changeArmy(army);
     if(r->getOwnerID() != army->getOwnerID() && r->getLandForm() != GameUtil::ocean){
+		//occupied a city or defeat a army
+		if(r->getLandForm() == GameUtil::city){
+			//if region is a city, change Player's cityList
+			if(r->getOwnerID() != 0){
+                idPlayerMap[r->getOwnerID()]->getCityVList()->removeAll(r);
+			}
+            idPlayerMap[army->getOwnerID()]->getCityVList()->append(r);
+		}
+	//	if(r->getOwnerID() !=0 ){//defeat an army
+	//	//	if(playerFail(idPlayerMap[r->getOwnerID()])){
+	//				removePlayer(idPlayerMap[r->getOwnerID()]);
+	//				tryEndGame();
+	//		}
+	//	}
         r->changeOwner(army->getOwnerID());
+		//expend teh border
         for(int i=0;i<6;i++){
             intCoor nearHexCoor = GameUtil::getDesMapHexCoor(r->getHexCoorX(),r->getHexCoorY(),
                                                              GameUtil::nearbyHexCoor[i][0],
@@ -266,19 +390,29 @@ void GameControler::armyFight(Army *attacker, GameMapRegion *r){
 	//1 for attacker, 2 for defender
 	bool win_flag = false;
 	bool lost_flag = false;
+	GameMapRegion *armyRegion = gameMapRegion[attacker->getHexCoorX()][attacker->getHexCoorY()];
+	double terrainCost = 0;
 	int r1,r2;//army remain	
 	double bonus1,bonus2;
 	std::default_random_engine generator;
     std::normal_distribution<double> distribution(1.0,1.0);
-	//attacking Code
 	int n1 = attacker->getArmyNumber();
 	int n2 = r->getArmy()->getArmyNumber();
     bonus1 = distribution(generator);
     bonus2 = distribution(generator);
     if(bonus1 <= 0.33) bonus1 = 0.33;
     if(bonus2 <= 0.33) bonus2 = 0.33;
+	if(r->getLandForm() == GameUtil::city){
+		terrainCost += 0.3;
+	}
+    if(armyRegion->getLandForm() == GameUtil::ocean &&
+            r->getLandForm() != GameUtil::ocean){
+		terrainCost +=0.2;
+	}
 	r1 = (int)(n1 - n2 * bonus2);
-	r2 = (int)(n2 - n1 * bonus1);
+	r2 = (int)(n2 - n1 * bonus1 * (1 - terrainCost));
+	qDebug() << "Attaker power:" << n1 <<" "<<bonus1 <<" "<<terrainCost;
+	qDebug() << "Defender power:" << n2 <<" "<<bonus2;
 	if(r1 <= 0 && r2 <= 0){
 		//benefit defender
 		r1 = 0;
@@ -322,6 +456,8 @@ void GameControler::armyRegoup(Army *army1, GameMapRegion *r){
 
 void GameControler::tryMoveArmy(QGraphicsItem *i_army, int hexCoorX, int hexCoorY){
     Army *army;
+	Player *armyPlayer;
+	Player *opponent;
     if(typeid(*i_army) == typeid(Army))
         army = (Army *)i_army;
     army->moved = true;
@@ -334,6 +470,10 @@ void GameControler::tryMoveArmy(QGraphicsItem *i_army, int hexCoorX, int hexCoor
         qDebug() << "Verify Moving to"
                  <<r->getHexCoorX() <<","
                  <<r->getHexCoorY();
+		if(r->getOwnerID() != 0){
+			opponent = idPlayerMap[r->getOwnerID()];
+		}
+		armyPlayer = idPlayerMap[army->getOwnerID()];
         if(r->getArmy() == Q_NULLPTR){
             GameControler::moveArmy(army, r);
         } else if(army->getOwnerID() != r->getArmy()->getOwnerID()){
@@ -342,16 +482,28 @@ void GameControler::tryMoveArmy(QGraphicsItem *i_army, int hexCoorX, int hexCoor
             GameControler::armyRegoup(army, r);
             r->getArmy()->moved = true;
         }
+        if(playerFail(armyPlayer) ){
+			removePlayer(armyPlayer);
+			tryEndGame();
+		}
+        if(playerFail(opponent)){
+			removePlayer(opponent);
+			tryEndGame();
+		}
     }
     //active other army
-    if(!actPlayer->isNPC())
-    {
-        QVector<Army *> *armyList = this->actPlayer->getArmyList();
-        for(int i=0;i<armyList->size();i++){
-                armyList->at(i)->enableInteraction();
+    if(actPlayer != Q_NULLPTR){
+        qDebug()<< "aaaaaaaaaaaaaa";
+        if(!actPlayer->isNPC()){
+            QVector<Army *> *armyList = this->actPlayer->getArmyList();
+            for(int i=0;i<armyList->size();i++){
+                    armyList->at(i)->enableInteraction();
+            }
         }
     }
+//    qDebug()<< "hhhhhhhhhhhhh";
 	mainGameMap->update();
+//    qDebug()<< "HHHHHHHHHHHHH";
 }
 
 void GameControler::activatePlayer(Player *player){
@@ -371,11 +523,13 @@ void GameControler::activatePlayer(Player *player){
 void GameControler::inactivatePlayer(){
     Player *player = actPlayer;
     actPlayer = Q_NULLPTR;
-	if(player->isNPC()){
+    if(player != Q_NULLPTR){
+        if(player->isNPC()){
 
-	} else{
-		player->disableInteraction();
-	}
+        } else{
+            player->disableInteraction();
+        }
+    }
 }
 void GameControler::nextTurnBtnPushed(){
 	onePlayerFinish();	
