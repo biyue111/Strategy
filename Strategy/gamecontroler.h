@@ -9,6 +9,7 @@
 #include <QObject>
 #include <QPushButton>
 #include <QVector>
+#include <QMessageBox>
 #include <fstream>
 #include "GameBackGround.h"
 #include "army.h"
@@ -16,14 +17,17 @@
 #include "gamemapregion.h"
 #include "player.h"
 
+#define HUMAN_NUMBER 2
+#define NPC_NUMBER 0
 class GameControler : public QObject
 {
     Q_OBJECT
 private:
     QGraphicsScene *mainGameMap;
-    QGraphicsScene *activePlayer;
+    //QGraphicsScene *activePlayer;
     QGraphicsView *view;
     QPushButton *nextTurnBtn;
+    QPushButton *restartBtn;
     QVector<QVector<GameMapRegion *>> gameMapRegion;
     QVector<GameMapRegion *> cityVList;
 	QVector<Army *> armyVList;
@@ -31,6 +35,7 @@ private:
 	QMap<int, Player *> idPlayerMap;
 	int actPlayerSequenceNumber;
     Player *actPlayer;
+    bool gameEnd;
 
     void moveArmy(Army *army, GameMapRegion *r);
     void armyFight(Army *attacker, GameMapRegion *r);
@@ -42,10 +47,14 @@ public:
 	void gameBegin();
 	void onePlayerFinish();
     void endTurn();
+	bool playerFail(Player *player);
+	int tryEndGame();
 
-    void createPlayer(int id, bool i_isNPC);
+    int createPlayer(bool i_isNPC, int id = -1);
+	void removePlayer(Player *player);
 	void createArmy(int hexCoorX, int hexCoorY, int owner, 
                      int number = 1, bool hasgeneral = false);
+	//void removeArmy(int id);
 	void removeArmy(Army *army);
 	void activatePlayer(Player *player);
     void inactivatePlayer();
@@ -54,6 +63,7 @@ public slots:
     void tryMoveArmy(QGraphicsItem *army, int hexCoorX, int hexCoorY);
     void armyClicked(QGraphicsItem *i_army, bool state);
     void nextTurnBtnPushed();
+	void restartGame();
 };
 
 #endif // GAMECONTROLER_H
