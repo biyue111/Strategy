@@ -19,9 +19,10 @@ public:
 	void enableInteraction();
 	void disableInteraction();
 	void addArmy(Army *army);
+	int getPlayerID() {return id;}
     bool isNPC(){return NPCPlayer;}
-    QVector<Army *>* getArmyList(){return &armyVList;}
-    //QVector<GameMapRegion *> getCityVList(){return cityVList;}
+    QVector<Army *> *getArmyList(){return &armyVList;}
+    QVector<GameMapRegion *> *getCityVList(){return &cityVList;}
 };
 
 #endif // PLAYER_H

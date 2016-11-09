@@ -32,3 +32,5 @@ HEADERS  += widget.h \
     player.h
 
 FORMS    += widget.ui
+
+RC_FILE += Strategyico.rc
