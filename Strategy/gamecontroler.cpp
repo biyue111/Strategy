@@ -32,6 +32,7 @@ GameControler::GameControler(QWidget *w){
 
     w->setLayout(layout);
     w->sizeHint();
+    //NPCPlayerAI *a = new NPCPlayerAI();
 }
 
 void GameControler::createGameMap(QGraphicsScene *scene){
@@ -104,11 +105,11 @@ void GameControler::gameBegin(){
 	//}
     gameEnd = false;
     this->createPlayer(false, 1);
-    this->createPlayer(false, 2);
 	cityVList[0]->changeOwner(playerIDVList[0]);
     createArmy(cityVList[0]->getHexCoorX(), cityVList[0]->getHexCoorY(),
                     playerIDVList[0], 8);
 	if(HUMAN_NUMBER == 2){
+    this->createPlayer(false, 2);
     cityVList[cityVList.size() - 1]->changeOwner(playerIDVList[1]);
     //createArmy(cityVList[cityVList.size() - 1]->getHexCoorX(),
     //            cityVList[cityVList.size() - 1]->getHexCoorY(),
@@ -116,7 +117,11 @@ void GameControler::gameBegin(){
 	}
     //this->createArmy(1,1,1);
     //this->createArmy(2,1,1);
-    ///this->createArmy(1,2,2);
+    //this->createArmy(1,2,2);
+	//Create AI Player
+	this->createPlayer(true, 3);
+    cityVList[4]->changeOwner(playerIDVList[2]);
+	
 	this->activatePlayer(idPlayerMap[playerIDVList[0]]);
 	actPlayerSequenceNumber = 0;
 	nextTurnBtn->setEnabled(true);
@@ -156,9 +161,9 @@ void GameControler::endTurn(){
 	//int armdyI = 8;
 }
 bool GameControler::playerFail(Player *player){
-	if(player)
-	return !player->getArmyList()->size() && 
-			!player->getCityVList()->size();
+    if(player != Q_NULLPTR)
+        return !player->getArmyList()->size() &&
+                !player->getCityVList()->size();
 	else
 		return false;
 }
@@ -217,10 +222,20 @@ int GameControler::createPlayer(bool i_isNPC, int id){
 	for(int i=0;i<playerIDVList.size();i++)
 		if(id == playerIDVList[i])
 			qDebug() << "repeat player id";
-    Player *player = new Player(id, i_isNPC);
+	Player *player;
+	if(i_isNPC)
+        player = new NPCPlayer(id, &gameMapRegion);
+	else
+        player = new Player(id, i_isNPC);
 	playerIDVList.append(id);
     idPlayerMap.insert(id, player);
     player->disableInteraction();
+	if(player->isNPC()){
+		connect(player, SIGNAL(endTurn()),
+                this, SLOT(aiNextTurn()));
+        connect(player, SIGNAL(tryMoveArmy(QGraphicsItem*,int,int)),
+                this, SLOT(tryMoveArmy(QGraphicsItem*,int,int)));
+	}
 	qDebug() << "create Player with id" << id;
 }
 
@@ -383,7 +398,6 @@ void GameControler::moveArmy(Army *army, GameMapRegion *r){
         }
     }
     mainGameMap->update();
-	//after moved
 }
 
 void GameControler::armyFight(Army *attacker, GameMapRegion *r){
@@ -394,10 +408,9 @@ void GameControler::armyFight(Army *attacker, GameMapRegion *r){
 	double terrainCost = 0;
 	int r1,r2;//army remain	
 	double bonus1,bonus2;
-	std::default_random_engine generator;
-    std::normal_distribution<double> distribution(1.0,1.0);
 	int n1 = attacker->getArmyNumber();
 	int n2 = r->getArmy()->getArmyNumber();
+    std::normal_distribution<double> distribution(1.0,1.0);
     bonus1 = distribution(generator);
     bonus2 = distribution(generator);
     if(bonus1 <= 0.33) bonus1 = 0.33;
@@ -456,8 +469,8 @@ void GameControler::armyRegoup(Army *army1, GameMapRegion *r){
 
 void GameControler::tryMoveArmy(QGraphicsItem *i_army, int hexCoorX, int hexCoorY){
     Army *army;
-	Player *armyPlayer;
-	Player *opponent;
+    Player *armyPlayer = Q_NULLPTR;
+    Player *opponent = Q_NULLPTR;
     if(typeid(*i_army) == typeid(Army))
         army = (Army *)i_army;
     army->moved = true;
@@ -493,7 +506,7 @@ void GameControler::tryMoveArmy(QGraphicsItem *i_army, int hexCoorX, int hexCoor
     }
     //active other army
     if(actPlayer != Q_NULLPTR){
-        qDebug()<< "aaaaaaaaaaaaaa";
+//        qDebug()<< "aaaaaaaaaaaaaa";
         if(!actPlayer->isNPC()){
             QVector<Army *> *armyList = this->actPlayer->getArmyList();
             for(int i=0;i<armyList->size();i++){
@@ -513,7 +526,8 @@ void GameControler::activatePlayer(Player *player){
         armyList->at(i)->moved = false;
 	}
 	if(player->isNPC()){
-
+        NPCPlayer *NpcPlayer = (NPCPlayer*)player;
+        NpcPlayer->excuteAI();
 	} else{
 		player->enableInteraction();
     }
@@ -533,4 +547,8 @@ void GameControler::inactivatePlayer(){
 }
 void GameControler::nextTurnBtnPushed(){
 	onePlayerFinish();	
+}
+
+void GameControler::aiNextTurn(){
+	onePlayerFinish();
 }

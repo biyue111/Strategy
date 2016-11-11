@@ -3,7 +3,8 @@
 Player::Player(int i_id, bool i_NPCPlayer)
 {
     id = i_id;
-    NPCPlayer = i_NPCPlayer;
+    is_NPCPlayer = i_NPCPlayer;
+	//ai = new NPCPlayerAI();
 }
 
 void Player::enableInteraction(){

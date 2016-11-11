@@ -6,7 +6,6 @@
 #include <QGraphicsView>
 #include <QGraphicsItem>
 #include <QLayout>
-#include <QObject>
 #include <QPushButton>
 #include <QVector>
 #include <QMessageBox>
@@ -16,9 +15,13 @@
 #include "gameutil.h"
 #include "gamemapregion.h"
 #include "player.h"
+#include "NPCPlayer.h"
 
+#define Player_NUMBER 4
 #define HUMAN_NUMBER 2
-#define NPC_NUMBER 0
+//#define NPC_NUMBER 0
+
+
 class GameControler : public QObject
 {
     Q_OBJECT
@@ -36,6 +39,7 @@ private:
 	int actPlayerSequenceNumber;
     Player *actPlayer;
     bool gameEnd;
+    std::default_random_engine generator;
 
     void moveArmy(Army *army, GameMapRegion *r);
     void armyFight(Army *attacker, GameMapRegion *r);
@@ -62,6 +66,7 @@ public:
 public slots:
     void tryMoveArmy(QGraphicsItem *army, int hexCoorX, int hexCoorY);
     void armyClicked(QGraphicsItem *i_army, bool state);
+    void aiNextTurn();
     void nextTurnBtnPushed();
 	void restartGame();
 };

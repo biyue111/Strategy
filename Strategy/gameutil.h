@@ -8,8 +8,8 @@
 #include <QPainter>
 #define ROOT_3 1.732050808
 #define HEXGON_SIDE_LENGTH 20
-#define GAMEBG_GRID_COLONM 15
-#define GAMEBG_GRID_ROW 10
+#define GAMEBG_GRID_COLONM 18
+#define GAMEBG_GRID_ROW 12
 #define SCENE_EGDE 10
 #define MAX_ARMY_NUM 64
 

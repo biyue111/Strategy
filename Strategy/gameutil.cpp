@@ -91,6 +91,18 @@ QColor GameUtil::getQColorbyID(int id){
     case 2:
         return Qt::cyan;
         break;
+    case 3:
+        return Qt::yellow;
+        break;
+    case 4:
+        return Qt::magenta;
+        break;
+    case 5:
+        return Qt::white;
+        break;
+    case 6:
+        return Qt::green;
+        break;
     }
 }
 

@@ -50,8 +50,8 @@ public:
                                         QPointF(-0.5 * HEXGON_SIDE_LENGTH, 0.5 * ROOT_3 * HEXGON_SIDE_LENGTH)));
     }
 
-    changeOwner(int id) {ownerID = id;}
-    changeArmy(Army *army) {inRegionArmy = army;}
+    void changeOwner(int id) {ownerID = id;}
+    void changeArmy(Army *army) {inRegionArmy = army;}
     Army *getArmy() {return inRegionArmy;}
     int getOwnerID() {return ownerID;}
     int getHexCoorX(){return mapHexCoorX;}

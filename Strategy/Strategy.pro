@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     gameutil.cpp \
     gamemapregion.cpp \
     gamecontroler.cpp \
-    player.cpp
+    player.cpp \
+    npcplayer.cpp
 
 HEADERS  += widget.h \
     GameBackGround.h \
@@ -29,7 +30,8 @@ HEADERS  += widget.h \
     army.h \
     gamemapregion.h \
     gamecontroler.h \
-    player.h
+    player.h \
+    npcplayer.h
 
 FORMS    += widget.ui
 
