@@ -11,9 +11,21 @@ void NPCPlayer::excuteAI(){
 	int i = 0;
     while(i < armyVList.size()){
         if(!armyVList[i]->moved){
+			//find target city
+			QVector <GameMapRegion *> mostWantedCityVList;
+			for(int j=0;j<this->wantedCityVList.size();j++){
+				if(wantedCityVList[j]->getOwnerID() != this->id){
+					mostWantedCityVList.append(wantedCityVList[j]);
+				}
+			}
+
             Army *army = armyVList[i];
-            QVector <Node *> path = searchPath(army->getHexCoorX(), army->getHexCoorY(), 1 ,1);
-            if(path.size() >= 2){
+			QVector <Node *> path;
+			if(mostWantedCityVList.size() > 0)
+				path = searchPath(army->getHexCoorX(), army->getHexCoorY(), 
+									mostWantedCityVList[0]->getHexCoorX(),
+									mostWantedCityVList[0]->getHexCoorY());
+            if(path.size() >= 2){//if path.size()==1, army is at the target point
                 Node *firstNode = path[path.size()-2];
                 qDebug()<<"moveArmyto"<< firstNode->x <<" "<<firstNode->y;
                 int nx,ny;
@@ -35,6 +47,47 @@ void NPCPlayer::excuteAI(){
     emit(endTurn());
 }
 
+void NPCPlayer::findWantedCity(){
+	QQueue<Node *> qq;
+    bool visited[GAMEBG_GRID_COLONM][GAMEBG_GRID_ROW];
+    for(int i=0;i<GAMEBG_GRID_COLONM;i++)
+        for(int j=0;j<GAMEBG_GRID_ROW;j++)
+            visited[i][j] = false;
+	if(cityVList.size() > 0){
+		Node *n = new Node(cityVList[0]->getHexCoorX(), cityVList[0]->getHexCoorY());
+		visited[n->x][n->y] = true;
+		qq.enqueue(n);
+	} 
+	else if(armyVList.size() > 0){
+		Node *n = new Node(armyVList[0]->getHexCoorX(), armyVList[0]->getHexCoorY());
+		visited[n->x][n->y] = true;
+		qq.enqueue(n);
+	}
+	
+	while(qq.size() > 0){
+		Node *c = qq.dequeue();
+		QVector<QVector<GameMapRegion *>> gameMap = *gMR;
+		GameMapRegion *r = gameMap[c->x][c->y];
+		if(r->getLandForm() == GameUtil::city)
+			wantedCityVList.append(r);
+		//put region around in queue
+		for(int j=0;j<6;j++){
+			intCoor newCoor = GameUtil::getDesMapHexCoor(c->x, c->y, 
+                                        GameUtil::nearbyHexCoor[j][0], GameUtil::nearbyHexCoor[j][1]);
+			if(GameUtil::inMap(newCoor.first, newCoor.second) &&
+			  	!visited[newCoor.first][newCoor.second]){
+				qq.enqueue(new Node(newCoor.first, newCoor.second, c));
+				visited[newCoor.first][newCoor.second] = true;
+			}
+		}
+
+	}
+	for(int i=0;i<wantedCityVList.size();i++){
+		qDebug() <<"Wanted city: "<<wantedCityVList[i]->getHexCoorX()
+				 <<wantedCityVList[i]->getHexCoorY();
+	}
+		
+}
 QVector<Node *> NPCPlayer::searchPath(int sx, int sy, int dx, int dy){
 	QQueue<Node *> qq;
 	QVector<Node *> res;
@@ -54,7 +107,7 @@ QVector<Node *> NPCPlayer::searchPath(int sx, int sy, int dx, int dy){
 			Node *node = c;
 			res.append(node);
 			while(node->parent != NULL){
-				qDebug() << node->x <<" "<< node->y;
+				qDebug() <<"Find Path"<< node->x <<" "<< node->y;
 				node = node->parent;
 				res.append(node);
 			}
@@ -63,7 +116,7 @@ QVector<Node *> NPCPlayer::searchPath(int sx, int sy, int dx, int dy){
 				bool inerObstruct[6];
                 intCoor newCoor = GameUtil::getDesMapHexCoor(c->x, c->y,
                                         GameUtil::nearbyHexCoor[i][0], GameUtil::nearbyHexCoor[i][1]);
-                qDebug() <<"test: "<< newCoor.first <<" "<<newCoor.second;
+                //qDebug() <<"test: "<< newCoor.first <<" "<<newCoor.second;
                 bool accessible = false;
 				if(!GameUtil::inMap(newCoor.first, newCoor.second))
 					accessible = false;

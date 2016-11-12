@@ -23,10 +23,12 @@ class NPCPlayer : public Player
 	Q_OBJECT;
 private:
 	QVector<QVector<GameMapRegion *>> *gMR;
+	QVector<GameMapRegion *> wantedCityVList;
 public:
     NPCPlayer(int i_id, QVector<QVector<GameMapRegion *>> *i_gMR);
-    QVector<Node *> searchPath(int sx, int sy, int dx, int dy);
 	void excuteAI();
+    QVector<Node *> searchPath(int sx, int sy, int dx, int dy);
+	void findWantedCity();
 };
 
 #endif // NPCPLAYER_H

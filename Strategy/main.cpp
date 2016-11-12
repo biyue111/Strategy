@@ -10,7 +10,7 @@
 #include "GameBackGround.h"
 #include "GameBackGround.cpp"
 #include "GameUtil.h"
-#include "gameinterface.h"
+//#include "gameinterface.h"
 #include "gamecontroler.h"
 
 int main(int argc, char *argv[])

@@ -13,8 +13,8 @@ intCoor GameUtil::getRelativeHexCoor(int x,int y){
 intCoor GameUtil::getDesMapHexCoor(int mapx,int mapy, int dx,int dy){
     //Get the destination HexCoor. (dx,dy) is the destination in relative HexCoor
     //(mapx,mapy) is the map(absolu) hexCoor
-    qDebug() << "GameUtil::getDesMapHexCoor"<<mapx <<","<<mapy<<"|"
-             << dx<<","<<dy;
+    //qDebug() << "GameUtil::getDesMapHexCoor"<<mapx <<","<<mapy<<"|"
+    //         << dx<<","<<dy;
     if(mapx % 2 == 0)
         return std::make_pair(mapx + dx, mapy + dy);
     else if(dx % 2 == 0)

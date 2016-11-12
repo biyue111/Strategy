@@ -10,7 +10,7 @@
 #include <QVector>
 #include <QMessageBox>
 #include <fstream>
-#include "GameBackGround.h"
+//#include "GameBackGround.h"
 #include "army.h"
 #include "gameutil.h"
 #include "gamemapregion.h"
@@ -54,7 +54,7 @@ public:
 	bool playerFail(Player *player);
 	int tryEndGame();
 
-    int createPlayer(bool i_isNPC, int id = -1);
+    Player *createPlayer(bool i_isNPC, int id = -1);
 	void removePlayer(Player *player);
 	void createArmy(int hexCoorX, int hexCoorY, int owner, 
                      int number = 1, bool hasgeneral = false);

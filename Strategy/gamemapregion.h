@@ -36,7 +36,7 @@ public:
             //b = QBrush(Qt::NoBrush);
             painter->setBrush(Qt::NoBrush);
         else{
-            qDebug()<<"OwnerID"<<ownerID;
+            //qDebug()<<"OwnerID"<<ownerID;
             b = QBrush(GameUtil::getQColorbyID(ownerID),Qt::DiagCrossPattern);
             painter->setBrush(b);
         }
