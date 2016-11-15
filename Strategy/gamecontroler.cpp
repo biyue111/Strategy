@@ -60,7 +60,12 @@ void GameControler::createGameMap(QGraphicsScene *scene){
             scene->addItem(polygonItem);
         }
         */
-    std::fstream mapfile("../Strategy/asset/map/1.map");
+    //std::fstream mapfile;
+
+    std::fstream mapfile("./asset/map/1.map");
+
+        //std::fstream mapfile("../Strategy/asset/map/1.map");
+
 	if(!mapfile.is_open()){
 		qDebug() << "ERROR in open mapfile";
 	}

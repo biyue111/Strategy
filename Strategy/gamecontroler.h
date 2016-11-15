@@ -20,6 +20,7 @@
 
 #define Player_NUMBER 4
 #define HUMAN_NUMBER 2
+#define RELEASE 1
 //#define NPC_NUMBER 0
 
 

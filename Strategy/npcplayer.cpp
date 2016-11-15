@@ -12,6 +12,7 @@ void NPCPlayer::excuteAI(){
     while(i < armyVList.size()){
         if(!armyVList[i]->moved){
 			//find target city
+            qDebug() << "find one army!!";
 			QVector <GameMapRegion *> mostWantedCityVList;
 			for(int j=0;j<this->wantedCityVList.size();j++){
 				if(wantedCityVList[j]->getOwnerID() != this->id){
@@ -25,6 +26,7 @@ void NPCPlayer::excuteAI(){
 				path = searchPath(army->getHexCoorX(), army->getHexCoorY(), 
 									mostWantedCityVList[0]->getHexCoorX(),
 									mostWantedCityVList[0]->getHexCoorY());
+            qDebug() << path.size();
             if(path.size() >= 2){//if path.size()==1, army is at the target point
                 Node *firstNode = path[path.size()-2];
                 qDebug()<<"moveArmyto"<< firstNode->x <<" "<<firstNode->y;
@@ -38,6 +40,7 @@ void NPCPlayer::excuteAI(){
                         break;
                     }
                 }
+                qDebug() << "AI move army!!";
                 emit(tryMoveArmy(army, nx, ny));
                 //army->moved = true;
             }
@@ -92,7 +95,7 @@ QVector<Node *> NPCPlayer::searchPath(int sx, int sy, int dx, int dy){
 	QQueue<Node *> qq;
 	QVector<Node *> res;
     bool visited[GAMEBG_GRID_COLONM][GAMEBG_GRID_ROW];
-	bool findFlag;
+    bool findFlag = false;
 	QVector<QVector<GameMapRegion *>> gameMap = *gMR;
     for(int i=0;i<GAMEBG_GRID_COLONM;i++)
         for(int j=0;j<GAMEBG_GRID_ROW;j++)

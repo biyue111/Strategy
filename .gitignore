@@ -1,7 +1,9 @@
 build-Strategy-Desktop_Qt_5_6_1_MinGW_32bit-Debug
 build-Strategy-Desktop_Qt_5_7_0_MinGW_32bit-Debug
+build-Strategy-Desktop_Qt_5_7_0_MinGW_32bit-Release
 *~
 *.user
 *.swp
 /Strategy/tags
 /Strategy/notused
+/Strategy_1.0_pre
