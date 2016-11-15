@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
+QT       += network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -19,7 +20,8 @@ SOURCES += main.cpp\
     gamemapregion.cpp \
     gamecontroler.cpp \
     player.cpp \
-    npcplayer.cpp
+    npcplayer.cpp \
+    networkhelp.cpp
 
 HEADERS  += widget.h \
     GameUtil.h \
@@ -27,8 +29,10 @@ HEADERS  += widget.h \
     gamemapregion.h \
     gamecontroler.h \
     player.h \
-    npcplayer.h
+    npcplayer.h \
+    networkhelp.h
 
-FORMS    += widget.ui
+FORMS    += widget.ui \
+    networkhelp.ui
 
 RC_FILE += Strategyico.rc

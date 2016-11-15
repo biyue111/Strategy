@@ -10,7 +10,6 @@
 //#include "GameBackGround.h"
 //#include "GameBackGround.cpp"
 #include "GameUtil.h"
-//#include "gameinterface.h"
 #include "gamecontroler.h"
 
 int main(int argc, char *argv[])
@@ -20,10 +19,8 @@ int main(int argc, char *argv[])
     GameControler *gameControler= new GameControler(&w);
     w.show();
     gameControler->gameBegin();
-    //w->show();
-    //Widget w;
-    //w.setLayout(layout);
-    //w.show();
+    //NetworkHelp networkHelp;
+    //networkHelp.show();
 
     return a.exec();
 }

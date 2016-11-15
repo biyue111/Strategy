@@ -11,6 +11,7 @@
 #include <QMessageBox>
 #include <fstream>
 //#include "GameBackGround.h"
+#include "networkhelp.h"
 #include "army.h"
 #include "gameutil.h"
 #include "gamemapregion.h"
@@ -29,6 +30,7 @@ private:
     QGraphicsScene *mainGameMap;
     //QGraphicsScene *activePlayer;
     QGraphicsView *view;
+    QPushButton *helpBtn;
     QPushButton *nextTurnBtn;
     QPushButton *restartBtn;
     QVector<QVector<GameMapRegion *>> gameMapRegion;
@@ -67,6 +69,7 @@ public slots:
     void tryMoveArmy(QGraphicsItem *army, int hexCoorX, int hexCoorY);
     void armyClicked(QGraphicsItem *i_army, bool state);
     void aiNextTurn();
+    void helpBtnPushed();
     void nextTurnBtnPushed();
 	void restartGame();
 };

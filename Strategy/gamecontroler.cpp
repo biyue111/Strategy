@@ -10,7 +10,11 @@ GameControler::GameControler(QWidget *w){
 			this, SLOT(nextTurnBtnPushed()));	
 	restartBtn = new QPushButton("Restart");
     connect(restartBtn,SIGNAL(clicked()),
-			this, SLOT(restartGame()));	
+            this, SLOT(restartGame()));
+    helpBtn = new QPushButton("Help");
+    connect(helpBtn, SIGNAL(clicked()),
+            this, SLOT(helpBtnPushed()));
+
     double sceneX = (0.5 + 1.5 * GAMEBG_GRID_COLONM) * HEXGON_SIDE_LENGTH;
     double sceneY = GAMEBG_GRID_ROW * ROOT_3 * HEXGON_SIDE_LENGTH;
     mainGameMap->addRect(-0.5 * HEXGON_SIDE_LENGTH,0,sceneX,sceneY);
@@ -26,6 +30,7 @@ GameControler::GameControler(QWidget *w){
     view->resize(sceneX + SCENE_EGDE,sceneY + SCENE_EGDE);
     //view.show();
 
+    layout->addWidget(helpBtn);
 	layout->addWidget(restartBtn);
     layout->addWidget(nextTurnBtn);
     layout->addWidget(view);
@@ -551,6 +556,12 @@ void GameControler::inactivatePlayer(){
         }
     }
 }
+
+void GameControler::helpBtnPushed(){
+    NetworkHelp *networkHelp = new NetworkHelp();
+    networkHelp->show();
+}
+
 void GameControler::nextTurnBtnPushed(){
 	onePlayerFinish();	
 }
