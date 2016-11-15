@@ -176,7 +176,7 @@ bool GameControler::playerFail(Player *player){
 int GameControler::tryEndGame(){
 	if(idPlayerMap.size() == 1){
         QMessageBox msgBox;
-        msgBox.setText("The document has been modified.");
+        msgBox.setText("You Win!");
         msgBox.exec();
         gameEnd = true;
 		nextTurnBtn->setEnabled(false);

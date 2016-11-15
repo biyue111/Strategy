@@ -105,7 +105,33 @@ QColor GameUtil::getQColorbyID(int id){
         break;
     }
 }
-
+/*
+QString GameUtil::getNamebyID(int id){
+    switch (id){
+    case 0:
+        return Qt::black;
+        break;
+    case 1:
+        return Qt::red;
+        break;
+    case 2:
+        return Qt::cyan;
+        break;
+    case 3:
+        return Qt::yellow;
+        break;
+    case 4:
+        return Qt::magenta;
+        break;
+    case 5:
+        return Qt::white;
+        break;
+    case 6:
+        return Qt::green;
+        break;
+    }
+}
+*/
 QColor GameUtil::getQColorbyLandForm(GameUtil::landform l){
     switch (l){
 	case GameUtil::land:

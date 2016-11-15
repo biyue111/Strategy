@@ -7,8 +7,8 @@
 #include <QObject>
 #include <QPushButton>
 
-#include "GameBackGround.h"
-#include "GameBackGround.cpp"
+//#include "GameBackGround.h"
+//#include "GameBackGround.cpp"
 #include "GameUtil.h"
 //#include "gameinterface.h"
 #include "gamecontroler.h"

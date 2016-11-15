@@ -9,7 +9,7 @@
 #include <typeinfo>
 #include <QFont>
 #include "GameUtil.h"
-#include "armyregion.h"
+//#include "armyregion.h"
 
 class ArmyCurrentRegion : public QObject, public QGraphicsItem
 {
