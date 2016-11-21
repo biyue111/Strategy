@@ -426,7 +426,7 @@ void GameControler::armyFight(Army *attacker, GameMapRegion *r){
 	double bonus1,bonus2;
 	int n1 = attacker->getArmyNumber();
 	int n2 = r->getArmy()->getArmyNumber();
-    std::normal_distribution<double> distribution(1.0,1.0);
+    std::normal_distribution<double> distribution(1.0,0.3);
     bonus1 = distribution(generator);
     bonus2 = distribution(generator);
     if(bonus1 <= 0.33) bonus1 = 0.33;
