@@ -90,22 +90,26 @@ void GameControler::createGameMap(QGraphicsScene *scene){
         */
     //std::fstream mapfile;
 
-    std::fstream mapfile("./asset/map/1.map");
+    QFile mapfile(":/map/1.map");
 
         //std::fstream mapfile("../Strategy/asset/map/1.map");
 
-	if(!mapfile.is_open()){
+    if(!mapfile.open(QIODevice::ReadOnly)){
 		qDebug() << "ERROR in open mapfile";
 	}
 	GameUtil::landform l;
     for(int j=0;j<GAMEBG_GRID_COLONM;j++){
         QVector<GameMapRegion *> rv;
         for(int i=0;i<(GAMEBG_GRID_ROW - j % 2);i++){
-			if (mapfile.eof()){
+            if (mapfile.atEnd()){
 				l = GameUtil::land;
 			} else{
                 int in;
-                mapfile >> in;
+                char a;
+                mapfile.getChar(&a);
+                while(a == ' ' || a == '\n' ||a == 13)
+                    mapfile.getChar(&a);
+                in = (int)(a - 48);
 				//i = 0;
                 qDebug() << "createMape:"<<in;
                 l = GameUtil::landform(in);

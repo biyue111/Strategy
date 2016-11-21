@@ -2,6 +2,7 @@
 #define GAMECONTROLER_H
 #include <QObject>
 #include <QWidget>
+#include <QFile>
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QGraphicsItem>

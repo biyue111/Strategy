@@ -6,4 +6,7 @@
         <file alias="Kingthings_Calligraphica.ttf">asset/UI/Kingthings_Calligraphica.ttf</file>
         <file alias="Label.png">asset/UI/Label.png</file>
     </qresource>
+    <qresource prefix="/map">
+        <file alias="1.map">asset/map/1.map</file>
+    </qresource>
 </RCC>
