@@ -105,6 +105,33 @@ QColor GameUtil::getQColorbyID(int id){
         break;
     }
 }
+
+QString GameUtil::getNamebyID(int id){
+    switch (id){
+    case 0:
+        return QString("No");
+        break;
+    case 1:
+        return QString("Red");
+        break;
+    case 2:
+        return QString("Cyan");
+        break;
+    case 3:
+        return QString("Yellow");
+        break;
+    case 4:
+        return QString("Magenta");
+        break;
+    case 5:
+        return QString("White");
+        break;
+    case 6:
+        return QString("Green");
+        break;
+    }
+}
+
 /*
 QString GameUtil::getNamebyID(int id){
     switch (id){
@@ -135,7 +162,7 @@ QString GameUtil::getNamebyID(int id){
 QColor GameUtil::getQColorbyLandForm(GameUtil::landform l){
     switch (l){
 	case GameUtil::land:
-        return Qt::darkGreen;
+        return Qt::transparent;
         break;
 	case GameUtil::ocean:
         return Qt::blue;

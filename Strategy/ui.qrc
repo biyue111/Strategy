@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/UI">
+        <file alias="window.png">asset/UI/window.png</file>
+        <file alias="buttonOver.png">asset/UI/buttonOver.png</file>
+        <file alias="button.png">asset/UI/button.png</file>
+        <file alias="Kingthings_Calligraphica.ttf">asset/UI/Kingthings_Calligraphica.ttf</file>
+        <file alias="Label.png">asset/UI/Label.png</file>
+    </qresource>
+</RCC>

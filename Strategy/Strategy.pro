@@ -36,3 +36,6 @@ FORMS    += widget.ui \
     networkhelp.ui
 
 RC_FILE += Strategyico.rc
+
+RESOURCES += \
+    ui.qrc

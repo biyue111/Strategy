@@ -39,7 +39,7 @@ public:
     static constexpr dCoor hexCenter = std::make_pair(0.5 * HEXGON_SIDE_LENGTH,
                                              0.5 * ROOT_3 * HEXGON_SIDE_LENGTH);
     static QColor getQColorbyID(int id);
-	static QString getNamebyID(int id);
+    static QString getNamebyID(int id);
     static bool inMap(int mapx, int mapy);
     static QColor getQColorbyLandForm(landform l);
     static int test(){return nearbyHexCoor[0][0];}

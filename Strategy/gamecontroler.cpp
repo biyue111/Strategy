@@ -3,22 +3,40 @@
 GameControler::GameControler(QWidget *w){
     //mainWidget = w;
     mainGameMap = new QGraphicsScene();
-    QLayout * layout = new QVBoxLayout();
+
+    int fontId = QFontDatabase::addApplicationFont(":/UI/Kingthings_Calligraphica.ttf");
+    QStringList fontFamilies = QFontDatabase::applicationFontFamilies(fontId);
+    QFont font;
+    font.setFamily(fontFamilies.at(0)); //font Kingthings_Calligraphica
+    font.setPointSize(20);
+
+    mainLabel = new QLabel("Turn 1: Red");
+    mainLabel->setStyleSheet("QLabel{border-image: url(:/UI/Label.png); color: white}");
+    mainLabel->setFont(font);
+    mainLabel->setAlignment(Qt::AlignCenter);
 
     nextTurnBtn = new QPushButton("&Next Turn");
     connect(nextTurnBtn,SIGNAL(clicked()),
-			this, SLOT(nextTurnBtnPushed()));	
+            this, SLOT(nextTurnBtnPushed()));
+    nextTurnBtn->setStyleSheet("QPushButton{border-image: url(:/UI/button.png)} QPushButton::pressed{border-image: url(:/UI/buttonOver.png)}");
+    nextTurnBtn->setFont(font);
+
 	restartBtn = new QPushButton("Restart");
     connect(restartBtn,SIGNAL(clicked()),
             this, SLOT(restartGame()));
+    restartBtn->setStyleSheet("QPushButton{border-image: url(:/UI/button.png)} QPushButton::pressed{border-image: url(:/UI/buttonOver.png)}");
+    restartBtn->setFont(font);
     helpBtn = new QPushButton("Help");
     connect(helpBtn, SIGNAL(clicked()),
             this, SLOT(helpBtnPushed()));
+    helpBtn->setStyleSheet("QPushButton{border-image: url(:/UI/button.png)} QPushButton::pressed{border-image: url(:/UI/buttonOver.png)}");
+    helpBtn->setFont(font);
 
     double sceneX = (0.5 + 1.5 * GAMEBG_GRID_COLONM) * HEXGON_SIDE_LENGTH;
     double sceneY = GAMEBG_GRID_ROW * ROOT_3 * HEXGON_SIDE_LENGTH;
-    mainGameMap->addRect(-0.5 * HEXGON_SIDE_LENGTH,0,sceneX,sceneY);
+    //mainGameMap->addRect(-0.5 * HEXGON_SIDE_LENGTH,0,sceneX,sceneY);
     mainGameMap->setSceneRect(-0.5 * HEXGON_SIDE_LENGTH,0,sceneX,sceneY);
+    mainGameMap->setBackgroundBrush(Qt::transparent);
     this->createGameMap(mainGameMap);
 
     //army1->getArmyFigure()->setPos(20,20);
@@ -28,15 +46,25 @@ GameControler::GameControler(QWidget *w){
     view = new QGraphicsView(mainGameMap);
     view->setWindowTitle("Graphic View");
     view->resize(sceneX + SCENE_EGDE,sceneY + SCENE_EGDE);
+    view->setStyleSheet("background: transparent; border: none");
+    //view->setStyleSheet( "QGraphicsView {border-style: none;}" );
     //view.show();
 
-    layout->addWidget(helpBtn);
-	layout->addWidget(restartBtn);
-    layout->addWidget(nextTurnBtn);
-    layout->addWidget(view);
+    QGridLayout * layout = new QGridLayout();
+
+    layout->addWidget(nextTurnBtn,1,1,1,4);
+    layout->addWidget(view,2,1,1,4);
+    layout->addWidget(mainLabel,3,1);
+    layout->addWidget(helpBtn,3,4);
+    layout->addWidget(restartBtn,3,3);
 
     w->setLayout(layout);
     w->sizeHint();
+
+    //add background
+    w->setObjectName("mainWindow");
+    w->setStyleSheet("QWidget#mainWindow{border-image : url(:/UI/window.png)}");
+    w->resize(sceneX + SCENE_EGDE + 120,sceneY + SCENE_EGDE + 120);
     //NPCPlayerAI *a = new NPCPlayerAI();
 }
 
@@ -113,6 +141,7 @@ void GameControler::gameBegin(){
 	//for(int i=0;i<HUMAN_NUMBER;i++){
 	//	this->createPlayer(false, i + 1);
 	//}
+    turnNumber = 1;
     gameEnd = false;
     this->createPlayer(false, 1);
 	cityVList[0]->changeOwner(playerIDVList[0]);
@@ -172,6 +201,7 @@ void GameControler::onePlayerFinish(){
     }
 }
 void GameControler::endTurn(){
+    turnNumber++;
 	//add army in every city
 	//int armdyI = 8;
 }
@@ -186,7 +216,11 @@ bool GameControler::playerFail(Player *player){
 int GameControler::tryEndGame(){
 	if(idPlayerMap.size() == 1){
         QMessageBox msgBox;
-        msgBox.setText("You Win!");
+        if(!idPlayerMap[playerIDVList[0]]->isNPC()){
+            msgBox.setText("You Win!");
+        } else{
+            msgBox.setText("What a shame. Try again!");
+        }
         msgBox.exec();
         gameEnd = true;
 		nextTurnBtn->setEnabled(false);
@@ -541,6 +575,8 @@ void GameControler::activatePlayer(Player *player){
     for(int i=0;i<armyList->size();i++){
         armyList->at(i)->moved = false;
 	}
+    mainLabel->setText(QString("Turn %1: %2").arg(turnNumber)
+                                             .arg(GameUtil::getNamebyID(actPlayer->getPlayerID())));
 	if(player->isNPC()){
         NPCPlayer *NpcPlayer = (NPCPlayer*)player;
         NpcPlayer->excuteAI();

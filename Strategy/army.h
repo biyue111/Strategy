@@ -34,7 +34,7 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                QWidget *widget)
     {
-        QBrush b = QBrush(Qt::yellow,Qt::Dense4Pattern);
+        QBrush b = QBrush(Qt::white,Qt::Dense4Pattern);
         painter->setBrush(b);
         painter->drawPolygon(QPolygonF( QVector<QPointF>() <<
                                         QPointF( 0, 0 ) <<
@@ -71,7 +71,7 @@ public:
     }
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                QWidget *widget){
-        QBrush b = QBrush(Qt::yellow,Qt::Dense4Pattern);
+        QBrush b = QBrush(Qt::white,Qt::Dense4Pattern);
         painter->setBrush(b);
         //painter->setBrush(Qt::blue);
         painter->drawPolygon(QPolygonF( QVector<QPointF>() <<

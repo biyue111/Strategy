@@ -6,10 +6,12 @@
 #include <QGraphicsView>
 #include <QGraphicsItem>
 #include <QLayout>
+#include <QLabel>
 #include <QPushButton>
 #include <QVector>
 #include <QMessageBox>
 #include <fstream>
+#include <QFontDatabase>
 //#include "GameBackGround.h"
 #include "networkhelp.h"
 #include "army.h"
@@ -21,6 +23,7 @@
 #define Player_NUMBER 4
 #define HUMAN_NUMBER 2
 #define RELEASE 1
+//#define WINDOW_HIGHT
 //#define NPC_NUMBER 0
 
 
@@ -31,6 +34,7 @@ private:
     QGraphicsScene *mainGameMap;
     //QGraphicsScene *activePlayer;
     QGraphicsView *view;
+    QLabel *mainLabel;
     QPushButton *helpBtn;
     QPushButton *nextTurnBtn;
     QPushButton *restartBtn;
@@ -43,6 +47,7 @@ private:
     Player *actPlayer;
     bool gameEnd;
     std::default_random_engine generator;
+    int turnNumber;
 
     void moveArmy(Army *army, GameMapRegion *r);
     void armyFight(Army *attacker, GameMapRegion *r);
